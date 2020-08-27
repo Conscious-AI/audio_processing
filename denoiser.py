@@ -1,21 +1,24 @@
-from scipy.io.wavfile import read, write
-import noisereduce as nr
-import soundfile as sf
-import io
 import os
-from tqdm import tqdm
+import io
 
-root_dir = './data/'
+from tqdm import tqdm
+import soundfile as sf
+import noisereduce as nr
+from scipy.io.wavfile import read, write
+
+
+ROOT_DIR = '../command_recognizer/data/'
+
 
 class Denoiser:
     def __init__(self):
-        self.data_dir = os.listdir(root_dir)
+        self.data_dir = os.listdir(ROOT_DIR)
         self.data_dir.remove('command_labels.csv')
         self.data_dir_len = len(self.data_dir)
         self.denoised_list, self.rate_list = [], []
     
     def get_wav_dir(self, i):
-        return os.listdir(root_dir + self.data_dir[i])
+        return os.listdir(ROOT_DIR + self.data_dir[i])
 
     def write_dn_wavs(self, idx):
         print('\nFlushing denoised files to disk ...\n')
@@ -24,7 +27,7 @@ class Denoiser:
         
         # Writing to new file
         for i in tqdm(range(len(self.denoised_list))):
-            write(root_dir + self.data_dir[idx] + '/' + wav_dir[i][:-4]+'_dn.wav', self.rate_list[i], self.denoised_list[i])
+            write(ROOT_DIR + self.data_dir[idx] + '/' + wav_dir[i][:-4]+'_dn.wav', self.rate_list[i], self.denoised_list[i])
         
         self.denoised_list, self.rate_list = [], []
     
@@ -37,7 +40,7 @@ class Denoiser:
                 wav_name = self.get_wav_dir(idx1)[idx2]
                 
                 # Loading Wav File
-                with open(root_dir + self.data_dir[idx1] + '/' + wav_name, "rb") as wavfile:
+                with open(ROOT_DIR + self.data_dir[idx1] + '/' + wav_name, "rb") as wavfile:
                     input_wav = wavfile.read()
                 
                 data, rate = sf.read(io.BytesIO(input_wav))

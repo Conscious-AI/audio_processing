@@ -1,17 +1,8 @@
 import audioop
-from configparser import ConfigParser
 
 import pyaudio
 
-config = ConfigParser()
-config.read('audio_config.ini')
-
-FORMAT = getattr(pyaudio, config.get('config', 'FORMAT'))
-THRESHOLD = config.getint('config', 'THRESHOLD')
-CHUNK = config.getint('config', 'CHUNK_SIZE')
-CHANNELS = config.getint('config', 'CHANNELS')
-S_RATE = config.getint('config', 'SAMPLE_RATE')
-S_WIDTH = config.getint('config', 'SAMPLE_WIDTH')
+from audio_confs import *
 
 
 class DynamicThreshold():
@@ -65,7 +56,7 @@ stream = p.open(format=FORMAT,
                 frames_per_buffer=CHUNK)
 
 dt = DynamicThreshold()
-NEW_THRESHOLD = dt.adjust_for_ambient_noise(stream, duration=5)
+NEW_THRESHOLD = dt.adjust_for_ambient_noise(stream, duration=10)
 
-config.set('config', 'THRESHOLD', str(int(NEW_THRESHOLD)))
-config.write(open("audio_config.ini", "w"))
+audio_confs.set('config', 'THRESHOLD', str(int(NEW_THRESHOLD)))
+audio_confs.write(open("audio_config.ini", "w"))
